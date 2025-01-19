@@ -4,7 +4,6 @@ description = "Module for memory handling of processes using ctypes & pywin32"
 readme = "README.md"
 authors = [{ name = "run4r-ses" }]
 maintainers = [{ name = "run4r-ses" }]
-license = "Unlicense"
 classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
