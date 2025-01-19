@@ -11,17 +11,15 @@ class MODULEINFO(ctypes.Structure):
     ]
 
 def wait_for_module(process: int, module_name: str) -> tuple:
-    """
-    Blocking function to wait for a module to load.
+    """Blocking function to wait for a module to load.
 
-    Arguments:
-    process: int: Process handle.
-    module_name: str: Name of the module file. This will be
-    compared to os.path.basepath function result.
+    :param process: The process handle.
+    :type process: int
+    :param module_name: The name of the module file.
+    :type module_name: str
 
-    Returns tuple class
-    (module_address, module_path)
-    """
+    :return: A tuple containing the module handle and module path.
+    :rtype: tuple"""
     while True:
         count = 128
         while True:
@@ -49,16 +47,15 @@ def wait_for_module(process: int, module_name: str) -> tuple:
                 return (module, name.value)
 
 def dump_module(process: int, module: int) -> tuple:
-    """
-    Dumps module from process memory.
+    """Dumps a module from process memory.
 
-    Arguments:
-    process: int: Process handle.
-    module: int: Module address for module.
+    :param process: The process handle.
+    :type process: int
+    :param module: The module handle.
+    :type module: int
 
-    Returns tuple class
-    (length, data)
-    """
+    :return: A tuple containing the length and data.
+    :rtype: tuple"""
     module_info = MODULEINFO()
     if not psapi.GetModuleInformation(process,
             ctypes.c_int64(module), ctypes.byref(module_info)):
@@ -71,22 +68,19 @@ def dump_module(process: int, module: int) -> tuple:
         raise ReadWriteError("read error, ReadProcessMemory return %s" % error)
     return (module_info.SizeOfImage, dump.raw)
 
-def inject_module(process: int, module: int, data: bytes, ignore_security_fix: bool = False) -> None:
-    """
-    Injects module into given address.
+def inject_module(process: int, module: int, data: bytes) -> None:
+    """Injects a module into the given handle.
 
-    Arguments:
-    process: int: Process handle.
-    module: int: Module address for module.
-    data: bytes: Bytes for injected module.
-    ignore_security_fix: bool = False: Don't write back
-    the old security status of the module after writing
-    security as PAGE_EXECUTE_READWRITE.
+    :param process: The process handle.
+    :type process: int
+    :param module: The module handle.
+    :type module: int
+    :param data: The bytes for the injected module.
+    :type data: bytes
 
-    Returns None
-    Raises ProtectBypassError on protection bypass fail
-    Raises ReadWriteError on write error
-    """
+    :return: None
+    :raises ProtectBypassError: If protection bypass fails.
+    :raises ReadWriteError: If there is a write error."""
     old_security = ctypes.c_int64(PAGE_EXECUTE_READ)
     if not kernel32.VirtualProtectEx(process, ctypes.c_int64(module),
             len(data), PAGE_EXECUTE_READWRITE, ctypes.byref(old_security)):
@@ -96,15 +90,3 @@ def inject_module(process: int, module: int, data: bytes, ignore_security_fix: b
             ctypes.c_int64(module), data, len(data), 0):
         error = kernel32.GetLastError()
         raise ReadWriteError("write error, WriteProcessMemory return %s" % error)
-    
-    # Write old security back on. If it fails, it's
-    # not the end of the world but it's good to set
-    # the old security back just in case some other
-    # piece of code does stuff with it.
-    #
-    # However, writing the old security sometimes
-    # crashes some time-critical applications. In
-    # that case, don't write it back.
-    if not ignore_security_fix:
-        kernel32.VirtualProtectEx(process, ctypes.c_int64(module),
-            len(data), old_security.value, ctypes.byref(ctypes.c_int64()))

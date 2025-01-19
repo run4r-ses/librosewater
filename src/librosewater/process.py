@@ -4,15 +4,13 @@ from ctypes import wintypes
 from . import *
 
 def wait_for_process(process_name: str) -> tuple:
-    """
-    Blocking function to wait for a process.
+    """Blocking function to wait for a process.
 
-    Arguments:
-    process_name: str: Name of the process to wait for.
+    :param process_name: The name of the process to wait for.
+    :type process_name: str
 
-    Returns tuple class
-    (process_pid, process_handle)
-    """
+    :return: A tuple containing the process PID and process handle.
+    :rtype: tuple"""
     while True:
         count = 32
         while True:

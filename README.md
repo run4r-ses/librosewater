@@ -1,5 +1,5 @@
 <div align=center>
-    <img src="https://github.com/OpenM-Project/librosewater/assets/157366808/f5972377-f93c-4543-88f7-101a6c4c67b3">
+    <h1>librosewater &#127754; &#127801;</h1>
 </div>
 
 -----
@@ -12,15 +12,14 @@ For all support needed to this library, you can open an [issue](https://github.c
 ## :inbox_tray: Install
 Installation is done through `pip`:
 ```
-pip install git+https://github.com/OpenM-Project/librosewater.git
+pip install git+https://github.com/run4r-ses/librosewater.git
 ```
 :warning: **WARNING**: This will require you to have [`git`](https://git-scm.com/downloads) in your `PATH`.
 
 ## :zap: Example
 In this small example, we will:
-- Wait for a process to start
-- Open the process
-- Get the address and path of a module loaded into the process
+- Wait for a process to start & get a handle
+- Wait for the module & get a handle
 - Dump the module and patch it
 - Inject patched module into memory
 
@@ -30,18 +29,17 @@ import librosewater
 import librosewater.module
 import librosewater.process
 
-PID = librosewater.process.wait_for_process("my_app.exe")
-process_handle = ctypes.windll.kernel32.OpenProcess(librosewater.PROCESS_ALL_ACCESS, False, PID)
+process_PID, process_handle = librosewater.process.wait_for_process("my_app.exe")
 
-# Get module address and path
-module_address, module_path = librosewater.module.wait_for_module(process_handle, "super_secret_stuff.dll")
+# Get module handle and path
+module_handle, module_path = librosewater.module.wait_for_module(process_handle, "super_secret_stuff.dll")
 
 # Dump module to variable
-data_length, data = librosewater.module.dump_module(process_handle, module_address)
+data_length, data = librosewater.module.dump_module(process_handle, module_handle)
 
 # Inject new module data
 new_data = data.replace(b"\x00", b"\x02")
-librosewater.module.inject_module(process_handle, module_address, new_data)
+librosewater.module.inject_module(process_handle, module_handle, new_data)
 ```
 
 ## :page_with_curl: License

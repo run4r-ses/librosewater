@@ -1,0 +1,27 @@
+[project]
+name = "librosewater"
+description = "Module for memory handling of processes using ctypes & pywin32"
+readme = "README.md"
+authors = [{ name = "run4r-ses" }]
+maintainers = [{ name = "run4r-ses" }]
+license = "Unlicense"
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: The Unlicense (Unlicense)"
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/run4r-ses/librosewater"
+Documentation = "https://github.com/run4r-ses/librosewater"
+Repository = "https://github.com/run4r-ses/librosewater.git"
+Issues = "https://github.com/run4r-ses/librosewater/issues"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = {attr = "librosewater.__version__"}
